@@ -1,30 +1,32 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
+import { ProfileCard } from '@/app/components/ProfileCard';
 
 export default function Profile() {
   const searchParams = useSearchParams();
   const userData = searchParams.get('data');
   
   if (!userData) {
-    return <div>No user data</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="bg-white p-8 rounded-2xl shadow-xl">
+          <p className="text-gray-600 text-lg">No user data found</p>
+          <a 
+            href="/" 
+            className="mt-4 inline-block text-blue-600 hover:text-blue-700 font-medium"
+          >
+            ← Back to Home
+          </a>
+        </div>
+      </div>
+    );
   }
 
   const user = JSON.parse(userData);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold mb-4">Profile</h1>
-        {user.avatar_url && (
-          <img src={user.avatar_url} alt="Avatar"
-               className="w-24 h-24 rounded-full mb-4" />
-        )}
-        <p><strong>Name:</strong> {user.name || user.login}</p>
-        <p><strong>Email:</strong> {user.email}</p>
-        <a href="/" className="text-blue-600 mt-4 block">
-          Back to Home
-        </a>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4">
+      <ProfileCard user={user} />
     </div>
   );
 }
