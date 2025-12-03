@@ -42,8 +42,6 @@ export async function GET(req: NextRequest) {
     }
 
     const tokenData = await tokenResponse.json();
-
-    // Handle different response formats (GitHub returns access_token)
     const access_token = tokenData.access_token || tokenData.accessToken;
 
     if (!access_token) {
@@ -66,10 +64,6 @@ export async function GET(req: NextRequest) {
 
     const user = await userResponse.json();
 
-    // Store minimal user data in an HttpOnly cookie (avoid storing tokens)
-
-    // Session/cookie instead of URL params for security
-
     const safeUser = {
       id: user.id,
       login: user.login,
@@ -78,12 +72,14 @@ export async function GET(req: NextRequest) {
       avatar_url: user.avatar_url,
     };
 
+    // Set cookie and redirect (no URL params!)
     const res = NextResponse.redirect(new URL("/profile", req.url));
     res.cookies.set("user", JSON.stringify(safeUser), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: 60 * 60 * 24, // 24 hours
     });
 
     return res;
